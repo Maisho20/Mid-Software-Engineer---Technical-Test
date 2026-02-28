@@ -25,8 +25,8 @@ class IncomeController extends Controller
 
             $pocket = UserPocket::where('id', $request->pocket_id)
                 ->where('user_id', $userId)
+                ->lockForUpdate()
                 ->firstOrFail();
-            // dd($pocket);
 
             $income = Income::create([
                 'user_id' => $userId,
