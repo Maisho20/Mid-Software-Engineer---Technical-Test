@@ -21,4 +21,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('expenses', [ExpenseController::class, 'store']);
 
     Route::post('pockets/{id}/create-report', [ReportController::class, 'createReport']);
+
+    Route::get('reports/{id}', [ReportController::class, 'download']);
 });

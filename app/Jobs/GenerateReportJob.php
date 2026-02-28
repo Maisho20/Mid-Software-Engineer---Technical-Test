@@ -28,16 +28,27 @@ class GenerateReportJob implements ShouldQueue
     public function handle(): void
     {
         $report = Report::find($this->reportId);
-
         if (!$report) return;
+
+        $directory = 'reports';
+
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
 
         $query = $report->type === 'INCOME'
             ? Income::where('pocket_id', $report->pocket_id)
             : Expense::where('pocket_id', $report->pocket_id);
 
-        $data = $query->whereDate('created_at', $report->date)->get();
+        $data = $query
+            ->whereDate('created_at', $report->date)
+            ->get();
 
-        $filename = "reports/{$report->id}.xlsx";
+        $filename = "{$directory}/{$report->pocket_id}_{$report->type}_{$report->date}.xlsx";
+
+        if (Storage::disk('public')->exists($filename)) {
+            Storage::disk('public')->delete($filename);
+        }
 
         $content = "Amount,Notes,Date\n";
 
@@ -45,7 +56,7 @@ class GenerateReportJob implements ShouldQueue
             $content .= "{$row->amount},{$row->notes},{$row->created_at}\n";
         }
 
-        Storage::put($filename, $content);
+        Storage::disk('public')->put($filename, $content);
 
         $report->update([
             'file_path' => $filename,

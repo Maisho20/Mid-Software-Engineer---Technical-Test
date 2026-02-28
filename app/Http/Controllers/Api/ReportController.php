@@ -8,6 +8,7 @@ use App\Models\Report;
 use App\Models\UserPocket;
 use App\Jobs\GenerateReportJob;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -44,5 +45,48 @@ class ReportController extends Controller
                 'link' => url("reports/{$report->id}")
             ]
         ]);
+    }
+
+    public function download($id)
+    {
+        $userId = Auth::guard('api')->id();
+
+        $report = Report::where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
+        // dd($userId, $report, $id);
+
+        if (!$report) {
+            return response()->json([
+                'status' => 404,
+                'error' => true,
+                'message' => 'Report tidak ditemukan.'
+            ], 404);
+        }
+
+        if ($report->status !== 'DONE' || !$report->file_path) {
+            return response()->json([
+                'status' => 404,
+                'error' => true,
+                'message' => 'Report belum selesai dibuat.'
+            ], 404);
+        }
+
+        if (!Storage::exists($report->file_path)) {
+            return response()->json([
+                'status' => 404,
+                'error' => true,
+                'message' => 'File report tidak ditemukan.'
+            ], 404);
+        }
+
+        return Storage::download(
+            $report->file_path,
+            $report->id . '.xlsx',
+            [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ]
+        );
     }
 }
