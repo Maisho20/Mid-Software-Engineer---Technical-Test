@@ -34,4 +34,19 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    public function profile()
+    {
+        $user = Auth::guard('api')->user();
+
+        return response()->json([
+            'status' => 200,
+            'error' => false,
+            'message' => 'Berhasil login.',
+            'data' => [
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+            ]
+        ]);
+    }
 }
