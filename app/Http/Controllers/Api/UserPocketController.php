@@ -13,13 +13,13 @@ class UserPocketController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'balance' => 'required|numeric|min:0'
+            'initial_balance' => 'required|numeric|min:0'
         ]);
 
         $pocket = UserPocket::create([
             'user_id' => Auth::guard('api')->id(),
             'name' => $request->name,
-            'balance' => $request->balance
+            'balance' => $request->initial_balance
         ]);
 
         return response()->json([
