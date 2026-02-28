@@ -57,4 +57,9 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
         ];
     }
+
+    public function pockets()
+    {
+        return $this->hasMany(UserPocket::class, 'user_id', 'id');
+    }
 }
