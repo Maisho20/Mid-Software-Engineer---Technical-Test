@@ -31,4 +31,24 @@ class UserPocketController extends Controller
             ]
         ]);
     }
+
+    public function list()
+    {
+        $pockets = UserPocket::where('user_id', Auth::guard('api')->id())
+            ->get()
+            ->map(function ($pocket) {
+                return [
+                    'id' => $pocket->id,
+                    'name' => $pocket->name,
+                    'current_balance' => $pocket->balance
+                ];
+            });
+
+        return response()->json([
+            'status' => 200,
+            'error' => false,
+            'message' => 'Berhasil mengambil daftar pocket.',
+            'data' => $pockets
+        ]);
+    }
 }
