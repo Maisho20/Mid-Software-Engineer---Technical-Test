@@ -51,4 +51,21 @@ class UserPocketController extends Controller
             'data' => $pockets
         ]);
     }
+
+    public function totalBalance()
+    {
+        $userId = Auth::guard('api')->id();
+
+        $total = UserPocket::where('user_id', $userId)
+            ->sum('balance');
+
+        return response()->json([
+            'status' => 200,
+            'error' => false,
+            'message' => 'Berhasil mengambil total balance.',
+            'data' => [
+                'total' => $total
+            ]
+        ]);
+    }
 }

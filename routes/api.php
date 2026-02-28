@@ -10,8 +10,12 @@ Route::post('auth/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('auth/profile', [AuthController::class, 'profile']);
+
     Route::post('pockets', [UserPocketController::class, 'store']);
     Route::get('pockets', [UserPocketController::class, 'list']);
+    Route::get('pockets/total-balance', [UserPocketController::class, 'totalBalance']);
+
     Route::post('incomes', [IncomeController::class, 'store']);
+
     Route::post('expenses', [ExpenseController::class, 'store']);
 });
